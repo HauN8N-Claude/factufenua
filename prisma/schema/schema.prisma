@@ -1,0 +1,109 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+model Feedback {
+  id      String  @id @default(nanoid(11))
+  review  Int
+  message String
+  email   String?
+  userId  String?
+  user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// FactuFenua — Facturation conforme Polynésie française
+//
+// Scoping multi-tenant : `organizationId` (champ indexé, pas de FK vers le
+// schéma better-auth auto-généré). TOUJOURS filtrer par organizationId.
+// Régimes / statuts / modes en String + validation Zod (src/lib/tax/pf.ts) :
+//  - taxRegime      : "FRANCHISE" | "ASSUJETTI_TVA"
+//  - status         : "PAID" | "UNPAID"
+//  - priceInputMode : "HT" | "TTC"
+// Montants en XPF (Decimal). Valeurs fiscales figées sur la facture (ADR-001).
+// ---------------------------------------------------------------------------
+
+model Company {
+  id             String  @id @default(nanoid(11))
+  organizationId String  @unique
+  name           String
+  tahitiNumber   String
+  address        String
+  logoUrl        String?
+  taxRegime      String  @default("FRANCHISE")
+  invoiceSeq     Int     @default(0)
+
+  clients  Client[]
+  invoices Invoice[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Client {
+  id             String  @id @default(nanoid(11))
+  organizationId String
+  companyId      String
+  company        Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name           String
+  tahitiNumber   String?
+  address        String
+
+  invoices Invoice[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@index([companyId])
+}
+
+model Invoice {
+  id             String   @id @default(nanoid(11))
+  organizationId String
+  companyId      String
+  company        Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  clientId       String
+  client         Client   @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  number         String
+  issueDate      DateTime
+  status         String   @default("UNPAID")
+  taxRegime      String // snapshot du régime à l'émission (ADR-001)
+  currency       String   @default("XPF")
+
+  lines InvoiceLine[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([organizationId, number])
+  @@index([organizationId])
+  @@index([companyId])
+  @@index([clientId])
+}
+
+model InvoiceLine {
+  id             String  @id @default(nanoid(11))
+  invoiceId      String
+  invoice        Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  description    String
+  quantity       Decimal
+  priceInputMode String // "HT" | "TTC"
+  unitPriceHT    Decimal // valeur canonique stockée (XPF)
+  vatRate        Decimal // 0 / 0.05 / 0.13 / 0.16 (snapshot)
+
+  createdAt DateTime @default(now())
+
+  @@index([invoiceId])
+}

@@ -1,0 +1,11 @@
+(node:17604) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+(node:6848) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[ioredis] Unhandled error event: Error: read ECONNRESET
+    at TLSWrap.onStreamRead (node:internal/stream_base_commons:216:20)
+    at TLSWrap.callbackTrampoline (node:internal/async_hooks:131:14)
+[ioredis] Unhandled error event: Error: read ECONNRESET
+    at TLSWrap.onStreamRead (node:internal/stream_base_commons:216:20)
+    at TLSWrap.callbackTrampoline (node:internal/async_hooks:131:14)
