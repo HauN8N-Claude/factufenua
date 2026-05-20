@@ -2,6 +2,9 @@
 
 ## 2026-05-20
 
+FEATURE: Landing — change subtitle copy from "Gratuit, sans inscription. Aucune donnée n'est envoyée à un serveur." to "Rapide, Gratuit et sans Inscription."
+CHORE: Initialize Git repository + push to GitHub (HauN8N-Claude/factufenua) — Vercel ↔ GitHub auto-deploy on push enabled
+CHORE: Remove .github/workflows (GitHub Actions CI) — Vercel handles all CI/CD; PAT-scope issue resolved
 FIX: CGU — replace <a> with next/link Link (no-html-link-for-pages)
 FEATURE: CGU — identification éditeur (PolynetIA F95709) section Objet + nouvelle section Contact (contact@polynetia.com)
 CHORE: Add .gitattributes (force LF) + .editorconfig (LF, utf-8, 2 spaces)
